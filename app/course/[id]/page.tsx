@@ -8,8 +8,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Star, Users, Clock, Award, BookOpen, CheckCircle, Heart } from 'lucide-react';
 
-'use client';
-
 export default function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [isEnrolled, setIsEnrolled] = useState(false);
