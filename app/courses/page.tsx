@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, Filter, X, Heart } from 'lucide-react';
 
 export default function CoursesPage() {
   const searchParams = useSearchParams();
@@ -17,6 +17,7 @@ export default function CoursesPage() {
   const [priceRange, setPriceRange] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
   const [showFilters, setShowFilters] = useState(false);
+  const [wishlist, setWishlist] = useState<number[]>([]);
 
   const courses = [
     {
@@ -118,6 +119,14 @@ export default function CoursesPage() {
   ];
 
   const categories = ['Web Development', 'Data Science', 'Mobile Dev', 'Design', 'Business'];
+
+  const toggleWishlist = (courseId: number) => {
+    setWishlist(prev =>
+      prev.includes(courseId)
+        ? prev.filter(id => id !== courseId)
+        : [...prev, courseId]
+    );
+  };
 
   // Filter courses
   let filteredCourses = courses.filter(course => {
@@ -289,35 +298,50 @@ export default function CoursesPage() {
             {filteredCourses.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {filteredCourses.map((course) => (
-                  <Link key={course.id} href={`/course/${course.id}`}>
-                    <Card className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden hover:border-primary/50">
-                      <div className="relative h-40 overflow-hidden bg-muted">
-                        <img
-                          src={course.image}
-                          alt={course.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                        <span className="absolute top-3 right-3 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                          {course.category}
-                        </span>
-                      </div>
-                      <CardContent className="p-4 space-y-3">
-                        <h3 className="font-bold text-foreground line-clamp-2 hover:text-primary transition-colors">
-                          {course.title}
-                        </h3>
-                        <p className="text-sm text-foreground/70">{course.instructor}</p>
-                        <div className="flex items-center justify-between text-xs text-foreground/60">
-                          <span>{course.level}</span>
-                          <span>{course.duration}</span>
+                  <div key={course.id} className="relative group">
+                    <Link href={`/course/${course.id}`}>
+                      <Card className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden hover:border-primary/50">
+                        <div className="relative h-40 overflow-hidden bg-muted">
+                          <img
+                            src={course.image}
+                            alt={course.title}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          />
+                          <span className="absolute top-3 right-3 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
+                            {course.category}
+                          </span>
                         </div>
-                        <div className="flex items-center justify-between pt-2 border-t border-border">
-                          <span className="text-sm font-semibold text-primary">{course.rating} ★</span>
-                          <span className="text-xs text-foreground/60">({course.students})</span>
-                        </div>
-                        <p className="text-lg font-bold text-foreground">${course.price}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                        <CardContent className="p-4 space-y-3">
+                          <h3 className="font-bold text-foreground line-clamp-2 hover:text-primary transition-colors">
+                            {course.title}
+                          </h3>
+                          <p className="text-sm text-foreground/70">{course.instructor}</p>
+                          <div className="flex items-center justify-between text-xs text-foreground/60">
+                            <span>{course.level}</span>
+                            <span>{course.duration}</span>
+                          </div>
+                          <div className="flex items-center justify-between pt-2 border-t border-border">
+                            <span className="text-sm font-semibold text-primary">{course.rating} ★</span>
+                            <span className="text-xs text-foreground/60">({course.students})</span>
+                          </div>
+                          <p className="text-lg font-bold text-foreground">${course.price}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleWishlist(course.id);
+                      }}
+                      className="absolute top-4 right-4 p-2 bg-white/90 rounded-full hover:bg-white shadow-lg transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110"
+                      aria-label={wishlist.includes(course.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                    >
+                      <Heart
+                        size={20}
+                        className={wishlist.includes(course.id) ? 'fill-destructive text-destructive' : 'text-foreground/60'}
+                      />
+                    </button>
+                  </div>
                 ))}
               </div>
             ) : (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,12 +8,15 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Star, Users, Clock, Award, BookOpen, CheckCircle, Heart } from 'lucide-react';
 
-export default function CourseDetail({ params }: { params: { id: string } }) {
+'use client';
+
+export default function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
 
   const course = {
-    id: params.id,
+    id: id,
     title: 'Web Development Fundamentals',
     instructor: 'Sarah Anderson',
     instructorImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
