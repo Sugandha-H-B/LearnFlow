@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, use } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,9 +10,11 @@ import Footer from '@/components/Footer';
 import { Star, Users, Clock, Award, BookOpen, CheckCircle, Heart } from 'lucide-react';
 
 export default function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
   const { id } = use(params);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
 
   const course = {
     id: id,
@@ -21,7 +24,8 @@ export default function CourseDetail({ params }: { params: Promise<{ id: string 
     rating: 4.8,
     students: '125K',
     reviews: 28543,
-    price: 49.99,
+    price: 0,
+    isFree: true,
     image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=400&fit=crop',
     category: 'Web Development',
     level: 'Beginner',
@@ -140,38 +144,54 @@ export default function CourseDetail({ params }: { params: Promise<{ id: string 
 
             {/* Enrollment Card */}
             <div className="lg:col-span-1">
-              <Card className="sticky top-24 overflow-hidden">
-                <div className="h-40 overflow-hidden">
-                  <img
-                    src={course.image}
-                    alt={course.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <p className="text-4xl font-bold text-foreground">${course.price}</p>
-                    <p className="text-sm text-foreground/60">One-time payment</p>
-                  </div>
-
-                  <Button 
-                    className="w-full py-6 text-base"
-                    onClick={() => setIsEnrolled(!isEnrolled)}
-                  >
-                    {isEnrolled ? 'Go to Course' : 'Enroll Now'}
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="w-full gap-2"
-                    onClick={() => setIsFavorited(!isFavorited)}
-                  >
-                    <Heart 
-                      size={20} 
-                      className={isFavorited ? 'fill-current text-destructive' : ''}
+              {!showPayment ? (
+                <Card className="sticky top-24 overflow-hidden">
+                  <div className="h-40 overflow-hidden">
+                    <img
+                      src={course.image}
+                      alt={course.title}
+                      className="w-full h-full object-cover"
                     />
-                    {isFavorited ? 'Favorited' : 'Add to Wishlist'}
-                  </Button>
+                  </div>
+                  <CardContent className="p-6 space-y-4">
+                    <div>
+                      {course.isFree ? (
+                        <p className="text-2xl font-bold text-primary">Free</p>
+                      ) : (
+                        <>
+                          <p className="text-4xl font-bold text-foreground">${course.price}</p>
+                          <p className="text-sm text-foreground/60">One-time payment</p>
+                        </>
+                      )}
+                    </div>
+
+                    <Button 
+                      className="w-full py-6 text-base"
+                      onClick={() => {
+                        if (isEnrolled) {
+                          router.push(`/course/${id}/learn`);
+                        } else if (course.isFree) {
+                          setIsEnrolled(true);
+                          setTimeout(() => router.push(`/course/${id}/learn`), 500);
+                        } else {
+                          setShowPayment(true);
+                        }
+                      }}
+                    >
+                      {isEnrolled ? 'Go to Course' : 'Enroll Now'}
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2"
+                      onClick={() => setIsFavorited(!isFavorited)}
+                    >
+                      <Heart 
+                        size={20} 
+                        className={isFavorited ? 'fill-current text-destructive' : ''}
+                      />
+                      {isFavorited ? 'Favorited' : 'Add to Wishlist'}
+                    </Button>
 
                   <div className="pt-4 space-y-2 border-t border-border text-sm text-foreground/70">
                     <div className="flex items-center gap-2">
@@ -189,6 +209,63 @@ export default function CourseDetail({ params }: { params: Promise<{ id: string 
                   </div>
                 </CardContent>
               </Card>
+              ) : (
+                <Card className="sticky top-24 overflow-hidden">
+                  <CardContent className="p-6 space-y-6">
+                    <div>
+                      <h3 className="text-2xl font-bold text-foreground mb-4">Payment Method</h3>
+                      <div className="space-y-3">
+                        <div className="p-4 border border-border rounded-lg hover:border-primary/50 cursor-pointer hover:bg-muted/30 transition-colors">
+                          <p className="font-semibold text-foreground">Credit Card</p>
+                          <p className="text-sm text-foreground/60">Visa, Mastercard, Amex</p>
+                        </div>
+                        <div className="p-4 border border-border rounded-lg hover:border-primary/50 cursor-pointer hover:bg-muted/30 transition-colors">
+                          <p className="font-semibold text-foreground">PayPal</p>
+                          <p className="text-sm text-foreground/60">Fast and secure payment</p>
+                        </div>
+                        <div className="p-4 border border-border rounded-lg hover:border-primary/50 cursor-pointer hover:bg-muted/30 transition-colors">
+                          <p className="font-semibold text-foreground">Apple Pay / Google Pay</p>
+                          <p className="text-sm text-foreground/60">One-click payment</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+                      <div className="flex justify-between mb-3">
+                        <span className="text-foreground">Course Price:</span>
+                        <span className="font-semibold text-foreground">${course.price}</span>
+                      </div>
+                      <div className="flex justify-between mb-4 pb-4 border-b border-border">
+                        <span className="text-foreground">Tax:</span>
+                        <span className="font-semibold text-foreground">$0</span>
+                      </div>
+                      <div className="flex justify-between text-lg">
+                        <span className="font-bold text-foreground">Total:</span>
+                        <span className="font-bold text-primary">${course.price}</span>
+                      </div>
+                    </div>
+
+                    <Button 
+                      className="w-full py-6 text-base"
+                      onClick={() => {
+                        setIsEnrolled(true);
+                        setShowPayment(false);
+                        setTimeout(() => router.push(`/course/${id}/learn`), 500);
+                      }}
+                    >
+                      Complete Payment
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setShowPayment(false)}
+                    >
+                      Back to Course
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </section>
@@ -280,21 +357,32 @@ export default function CourseDetail({ params }: { params: Promise<{ id: string 
         </section>
 
         {/* CTA Section */}
-        <section className="bg-gradient-to-r from-primary via-secondary to-primary/80 py-16 px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <h2 className="text-4xl font-bold text-primary-foreground">Ready to learn?</h2>
-            <p className="text-lg text-primary-foreground/90">
-              Join {course.students} students taking this course.
-            </p>
-            <Button 
-              size="lg" 
-              variant="secondary"
-              onClick={() => setIsEnrolled(!isEnrolled)}
-            >
-              {isEnrolled ? 'View Course' : `Enroll for $${course.price}`}
-            </Button>
-          </div>
-        </section>
+        {!showPayment && (
+          <section className="bg-gradient-to-r from-primary via-secondary to-primary/80 py-16 px-4">
+            <div className="max-w-4xl mx-auto text-center space-y-6">
+              <h2 className="text-4xl font-bold text-primary-foreground">Ready to learn?</h2>
+              <p className="text-lg text-primary-foreground/90">
+                Join {course.students} students taking this course.
+              </p>
+              <Button 
+                size="lg" 
+                variant="secondary"
+                onClick={() => {
+                  if (isEnrolled) {
+                    router.push(`/course/${id}/learn`);
+                  } else if (course.isFree) {
+                    setIsEnrolled(true);
+                    setTimeout(() => router.push(`/course/${id}/learn`), 500);
+                  } else {
+                    setShowPayment(true);
+                  }
+                }}
+              >
+                {isEnrolled ? 'Go to Course' : course.isFree ? 'Enroll for Free' : `Enroll for $${course.price}`}
+              </Button>
+            </div>
+          </section>
+        )}
       </main>
 
       <Footer />
