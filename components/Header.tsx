@@ -28,13 +28,13 @@ export default function Header() {
           <Link href="/categories" className="text-foreground/70 hover:text-foreground transition-colors">
             Categories
           </Link>
+          <Link href="/wishlist" className="text-foreground/70 hover:text-foreground transition-colors">
+            Wishlist
+          </Link>
           {isLoggedIn && (
             <>
               <Link href="/dashboard" className="text-foreground/70 hover:text-foreground transition-colors">
                 My Learning
-              </Link>
-              <Link href="/instructor" className="text-foreground/70 hover:text-foreground transition-colors">
-                Teach
               </Link>
             </>
           )}
@@ -87,6 +87,12 @@ export default function Header() {
             >
               Categories
             </Link>
+            <Link
+              href="/wishlist"
+              className="px-4 py-2 text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+            >
+              Wishlist
+            </Link>
             {isLoggedIn && (
               <>
                 <Link
@@ -94,12 +100,6 @@ export default function Header() {
                   className="px-4 py-2 text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                 >
                   My Learning
-                </Link>
-                <Link
-                  href="/instructor"
-                  className="px-4 py-2 text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-                >
-                  Teach
                 </Link>
               </>
             )}

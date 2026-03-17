@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Clock, BookOpen, Award, TrendingUp, Settings, LogOut } from 'lucide-react';
+import { Clock, BookOpen, Award, TrendingUp, Settings, LogOut, Heart, ArrowRight } from 'lucide-react';
 
 export default function Dashboard() {
   const [enrolledCourses] = useState([
@@ -259,28 +259,47 @@ export default function Dashboard() {
 
               {/* Wishlist */}
               <TabsContent value="wishlist" className="space-y-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground mb-4">Wishlist</h2>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-2xl font-bold text-foreground">Wishlist</h2>
+                      <p className="text-foreground/60 mt-1">{wishlistCourses.length} course{wishlistCourses.length !== 1 ? 's' : ''} saved</p>
+                    </div>
+                    <Link href="/wishlist">
+                      <Button gap="2">
+                        View Full Wishlist
+                        <ArrowRight size={16} />
+                      </Button>
+                    </Link>
+                  </div>
+
                   {wishlistCourses.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {wishlistCourses.map((course) => (
                         <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                          <div className="h-40 overflow-hidden bg-muted">
-                            <img
-                              src={course.image}
-                              alt={course.title}
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                          <CardContent className="p-4 space-y-4">
-                            <div>
-                              <h3 className="font-bold text-foreground mb-1 line-clamp-2">{course.title}</h3>
-                              <p className="text-sm text-foreground/60">{course.instructor}</p>
+                          <Link href={`/course/${course.id}`}>
+                            <div className="relative h-40 overflow-hidden bg-muted group cursor-pointer">
+                              <img
+                                src={course.image}
+                                alt={course.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <Heart size={32} className="text-white fill-current" />
+                              </div>
                             </div>
+                          </Link>
+                          <CardContent className="p-4 space-y-4">
+                            <Link href={`/course/${course.id}`}>
+                              <div className="cursor-pointer hover:opacity-80 transition-opacity">
+                                <h3 className="font-bold text-foreground mb-1 line-clamp-2 hover:text-primary transition-colors">{course.title}</h3>
+                                <p className="text-sm text-foreground/60">{course.instructor}</p>
+                              </div>
+                            </Link>
                             <div className="flex items-center justify-between pt-4 border-t border-border">
-                              <p className="text-lg font-bold text-foreground">${course.price}</p>
+                              <p className="text-lg font-bold text-primary">${course.price}</p>
                               <Link href={`/course/${course.id}`}>
-                                <Button size="sm">Enroll</Button>
+                                <Button size="sm">View Course</Button>
                               </Link>
                             </div>
                           </CardContent>
@@ -288,9 +307,10 @@ export default function Dashboard() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12">
-                      <BookOpen className="mx-auto text-muted/50 mb-4" size={48} />
+                    <div className="text-center py-12 bg-muted/30 rounded-lg">
+                      <Heart className="mx-auto text-muted-foreground/30 mb-4" size={48} />
                       <p className="text-foreground/60 mb-4">Your wishlist is empty</p>
+                      <p className="text-sm text-foreground/50 mb-6">Add courses to your wishlist by clicking the heart icon on any course</p>
                       <Link href="/courses">
                         <Button>Explore Courses</Button>
                       </Link>
