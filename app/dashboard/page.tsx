@@ -266,7 +266,7 @@ export default function Dashboard() {
                       <p className="text-foreground/60 mt-1">{wishlistCourses.length} course{wishlistCourses.length !== 1 ? 's' : ''} saved</p>
                     </div>
                     <Link href="/wishlist">
-                      <Button gap="2">
+                      <Button className="gap-2">
                         View Full Wishlist
                         <ArrowRight size={16} />
                       </Button>
