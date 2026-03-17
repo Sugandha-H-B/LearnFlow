@@ -12,8 +12,9 @@ import { Search, Filter, X, Heart } from 'lucide-react';
 
 export default function CoursesPage() {
   const searchParams = useSearchParams();
+  const categoryParam = searchParams.get('category');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  const [selectedCategory, setSelectedCategory] = useState(categoryParam ? decodeURIComponent(categoryParam) : '');
   const [priceRange, setPriceRange] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
   const [showFilters, setShowFilters] = useState(false);
