@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Search, Filter, X, Heart } from 'lucide-react';
 
-export default function CoursesPage() {
+function CoursesContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -359,5 +359,17 @@ export default function CoursesPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function CoursesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-foreground/60">Loading courses...</div>
+      </div>
+    }>
+      <CoursesContent />
+    </Suspense>
   );
 }
